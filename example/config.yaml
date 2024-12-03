@@ -1,0 +1,31 @@
+# https://cloud.debian.org/images/cloud/
+# https://cloud-images.ubuntu.com/
+# https://download.astralinux.ru/ui/native/mg-generic/
+
+libvirt_uri: "qemu:///system"
+
+pools:
+- name: example_dev
+  path: "/vms/pools/example_dev"
+
+instances:
+# - name: alse-gitlab-ex
+#   count: 1
+#   memory: 2048
+#   vcpu: 2
+#   network: default
+#   pool: example_dev
+#   image_source: "/vms/images/alse-vanilla-1.7.5-cloud-base-mg12.1.2.qcow2"
+#   user_name: linux
+#   user_passwd: "$1$SaltSalt$m0TvXBlE13unrgk8.qpwd0"
+#   ssh_authorized_key: "~/.ssh/id_rsa.pub"
+- name: jammy-gitlab-ex
+  count: 1
+  memory: 2048
+  vcpu: 2
+  network: default
+  pool: example_dev
+  image_source: "/vms/images/jammy-server-cloudimg-amd64-disk-kvm.img"
+  user_name: linux
+  user_passwd: "$1$SaltSalt$m0TvXBlE13unrgk8.qpwd0"
+  ssh_authorized_key: "~/.ssh/id_rsa.pub"

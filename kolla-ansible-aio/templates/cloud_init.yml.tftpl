@@ -1,0 +1,66 @@
+#cloud-config
+groups:
+  - ${user_name}
+users:
+  - name: ${user_name}
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    primary-group: ${user_name}
+    groups: sudo
+    lock_passwd: false
+    passwd: ${user_passwd} 
+    ssh-authorized-keys:
+      - ${ssh_authorized_key}
+
+ssh_pwauth: True
+
+apt:
+  preserve_sources_list: true
+
+  sources:
+
+    02cd-debian-12.7.0:
+      source: |
+        deb [arch=amd64 trusted=yes] http://repository.rpot.lab/repo-cd bookworm main contrib non-free-firmware 
+
+    01yandex-mirror:
+      source: |
+        deb [arch=amd64] http://repository.rpot.lab/repo-os/mirror.yandex.ru/debian/ bookworm main
+        deb [arch=amd64 check-valid-until=no] http://repository.rpot.lab/repo-os/mirror.yandex.ru/debian-security/ bookworm-security main contrib
+        deb [arch=amd64 check-valid-until=no] http://repository.rpot.lab/repo-os/mirror.yandex.ru/debian/ bookworm-updates main contrib
+
+    01osbpo-openstack-dalmatian:
+      source: |
+        deb [arch=amd64 signed-by=/usr/share/keyrings/osbpo.gpg] http://repository.rpot.lab/repo-os/osbpo.debian.net/osbpo bookworm-dalmatian-backports main
+        deb [arch=amd64 signed-by=/usr/share/keyrings/osbpo.gpg] http://repository.rpot.lab/repo-os/osbpo.debian.net/osbpo bookworm-dalmatian-backports-nochange main
+        deb [arch=amd64 signed-by=/usr/share/keyrings/osbpo.gpg] http://repository.rpot.lab/repo-os/osbpo.debian.net/osbpo bookworm-libvirt main
+        deb [arch=amd64 signed-by=/usr/share/keyrings/osbpo.gpg] http://repository.rpot.lab/repo-os/osbpo.debian.net/osbpo bookworm-qemu main
+        deb [arch=amd64 signed-by=/usr/share/keyrings/osbpo.gpg] http://repository.rpot.lab/repo-os/osbpo.debian.net/osbpo ovs-11 main
+        deb [arch=amd64 signed-by=/usr/share/keyrings/osbpo.gpg] http://repository.rpot.lab/repo-os/osbpo.debian.net/osbpo mariadb-10.6 main
+        deb [arch=amd64 signed-by=/usr/share/keyrings/osbpo.gpg] http://repository.rpot.lab/repo-os/osbpo.debian.net/osbpo ceph-reef main
+
+growpart:
+  mode: auto
+  devices: ['/']
+resize_rootfs: true
+
+packages:
+%{ for package in package_list ~}
+  - ${package}
+%{ endfor ~}
+package_update: true
+# package_upgrade: true
+package_reboot_if_required: true
+
+runcmd:
+  - sudo wget -P /usr/share/keyrings/ http://repository.rpot.lab/repo-os/osbpo.gpg
+  - [ systemctl, daemon-reload ]
+  - [ systemctl, enable, qemu-guest-agent ]
+  - [ systemctl, start, qemu-guest-agent ]
+  # - [ systemctl, restart, systemd-networkd ]
+
+# power_state:
+#     delay: now
+#     mode: reboot
+#     message: Rebooting machine
+#     condition: true

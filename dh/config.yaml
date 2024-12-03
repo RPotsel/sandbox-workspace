@@ -1,0 +1,27 @@
+libvirt_uri: "qemu:///system"
+
+pools:
+- name: dh
+  path: "/vms/pools/dh"
+
+instances:
+- name: dh-master
+  count: 1
+  memory: 4096
+  vcpu: 2
+  network: default
+  pool: dh
+  image_source: "/vms/images/alse-vanilla-1.7.3-cloud-base-mg9.0.0.qcow2"
+  user_name: linux
+  user_passwd: "$1$SaltSalt$m0TvXBlE13unrgk8.qpwd0"
+  ssh_authorized_key: "~/.ssh/id_rsa.pub"
+# - name: worker
+#   count: 2
+#   memory: 1024
+#   vcpu: 2
+#   network: default
+#   pool: dh
+#   image_source: "/vms/images/jammy-server-cloudimg-amd64-disk-kvm.img"
+#   user_name: linux
+#   user_passwd: "$1$SaltSalt$m0TvXBlE13unrgk8.qpwd0"
+#   ssh_authorized_key: "~/.ssh/id_rsa.pub"

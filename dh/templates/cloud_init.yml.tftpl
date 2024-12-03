@@ -1,0 +1,48 @@
+#cloud-config
+groups:
+  - ${user_name}
+users:
+  - name: ${user_name}
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    primary-group: ${user_name}
+    groups: sudo
+    lock_passwd: false
+    passwd: ${user_passwd} 
+    ssh-authorized-keys:
+      - ${ssh_authorized_key}
+
+ssh_pwauth: True
+
+preserve_sources_list: false
+apt:
+  proxy: http://repository.rpot.lab:3142
+  sources_list: |
+    deb http://mirror.yandex.ru/mirrors/astralinux/stable/1.7_x86-64/repository-base/ 1.7_x86-64 main contrib non-free
+    deb http://mirror.yandex.ru/mirrors/astralinux/stable/1.7_x86-64/repository-update/ 1.7_x86-64 main contrib non-free
+    deb http://mirror.yandex.ru/mirrors/astralinux/stable/1.7_x86-64/repository-extended/ 1.7_x86-64 main contrib non-free
+
+growpart:
+  mode: auto
+  devices: ['/']
+resize_rootfs: true
+
+packages:
+%{ for package in package_list ~}
+  - ${package}
+%{ endfor ~}
+package_update: true
+# package_upgrade: true
+package_reboot_if_required: true
+
+runcmd:
+  - [ systemctl, daemon-reload ]
+  - [ systemctl, enable, qemu-guest-agent ]
+  - [ systemctl, start, qemu-guest-agent ]
+  # - [ systemctl, restart, systemd-networkd ]
+
+# power_state:
+#     delay: now
+#     mode: reboot
+#     message: Rebooting machine
+#     condition: true

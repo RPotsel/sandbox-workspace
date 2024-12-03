@@ -1,0 +1,27 @@
+libvirt_uri: "qemu:///system"
+
+pools:
+- name: k8s
+  path: "/vms/pools/k8s"
+
+instances:
+- name: master
+  count: 1
+  memory: 2048
+  vcpu: 2
+  network: default
+  pool: k8s
+  image_source: "/vms/images/debian-12-genericcloud-amd64.qcow2"
+  user_name: linux
+  user_passwd: "$1$SaltSalt$m0TvXBlE13unrgk8.qpwd0"
+  ssh_authorized_key: "~/.ssh/id_rsa.pub"
+- name: worker
+  count: 2
+  memory: 1024
+  vcpu: 2
+  network: default
+  pool: k8s
+  image_source: "/vms/images/debian-12-genericcloud-amd64.qcow2"
+  user_name: linux
+  user_passwd: "$1$SaltSalt$m0TvXBlE13unrgk8.qpwd0"
+  ssh_authorized_key: "~/.ssh/id_rsa.pub"

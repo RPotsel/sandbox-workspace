@@ -1,0 +1,18 @@
+libvirt_uri: "qemu:///system"
+
+pools:
+- name: kolla-ansible-aio
+  path: "/vms/pools/kolla-ansible-aio"
+
+instances:
+- name: kolla-aio
+  count: 1
+  memory: 7168
+  vcpu: 4
+  volume_size: 53687091200
+  network: default
+  pool: kolla-ansible-aio
+  image_source: "/vms/images/debian-12-generic-amd64-20241004-1890.qcow2"
+  user_name: linux
+  user_passwd: "$1$SaltSalt$m0TvXBlE13unrgk8.qpwd0"
+  ssh_authorized_key: "~/.ssh/id_rsa.pub"
